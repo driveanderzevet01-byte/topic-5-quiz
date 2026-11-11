@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Classroom Practice Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#151a22;--muted:#4f5867;--line:#d6dbe3;--soft:#f4f6f9;--accent:#2445c4;--accent-ink:#fff;--mark:#ffd84a;--mark-ink:#151a22;--good:#1b7a45;--good-bg:#e3f4ea;--bad:#b4261c;--bad-bg:#fbe7e5;--warn-bg:#fff4d1;--warn:#7a5200;--head:#1f4e63;--head-ink:#fff;--hero:#dfe9f3;
+--display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;--body:"Source Sans 3","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151b;--card:#1c2029;--ink:#eef1f6;--muted:#a9b1bf;--line:#353b48;--soft:#242935;--accent:#8fa6ff;--accent-ink:#0d1120;--good:#6fd39a;--good-bg:#173323;--bad:#ff8f84;--bad-bg:#3a1c1a;--warn-bg:#3a2f12;--warn:#ffd77a;--head:#8fc3d9;--head-ink:#0d1a20;--hero:#1f2a36;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12151b;--card:#1c2029;--ink:#eef1f6;--muted:#a9b1bf;--line:#353b48;--soft:#242935;--accent:#8fa6ff;--accent-ink:#0d1120;--good:#6fd39a;--good-bg:#173323;--bad:#ff8f84;--bad-bg:#3a1c1a;--warn-bg:#3a2f12;--warn:#ffd77a;--head:#8fc3d9;--head-ink:#0d1a20;--hero:#1f2a36;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 var(--body);-webkit-text-size-adjust:100%}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px}
+.eyebrow{font:600 12px var(--body);text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:6px}
+.muted{color:var(--muted)}
+label.f{display:block;font-weight:600;margin:14px 0 4px}
+input.t{width:100%;font:inherit;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+input.t:focus{outline:2px solid var(--accent);outline-offset:1px}
+.btn{font:700 16px var(--body);border-radius:999px;padding:11px 22px;cursor:pointer;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:focus-visible,.num:focus-visible,.opt:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:.9rem;cursor:pointer;padding:8px 0}
+.err{color:var(--bad);font-weight:600;min-height:1.4em;margin:8px 0 0}
+.rules{background:var(--warn-bg);border-radius:12px;padding:12px 16px;margin:18px 0 6px}
+.rules b{color:var(--warn)}
+.rules ul{margin:6px 0 0;padding-left:20px}
+/* student: top bar + grid */
+.sbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);margin-bottom:14px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-weight:600;font-size:.9rem}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.num{font:700 18px var(--mono);aspect-ratio:1;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.num.done{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+.num.open{border-color:var(--accent);color:var(--accent)}
+.num.locked{background:var(--soft);color:var(--muted);text-decoration:line-through;cursor:not-allowed}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;color:var(--muted);margin:12px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1.5px solid var(--line);vertical-align:-1px;margin-right:4px}
+/* student: question */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.qhead h2{font-size:1.6rem}
+.clock{font:700 1.5rem var(--mono)}
+.clock.low{color:var(--bad)}
+.tbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:14px}
+.tbar i{display:block;height:100%;background:var(--accent);width:100%;transition:width 1s linear}
+.hint{font-size:.9rem;color:var(--muted);margin:0 0 10px}
+.opts{display:flex;flex-direction:column;gap:10px;user-select:none;-webkit-user-select:none}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;font:inherit;font-size:1.02rem;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;min-height:52px}
+.opt .l{font:700 1rem var(--mono);color:var(--accent);min-width:1.4em}
+.opt .bl{display:block}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.saved{font-weight:700;color:var(--good);min-height:1.5em;margin:10px 0 0}
+/* modal & toast */
+.overlay{position:fixed;inset:0;background:rgba(10,12,18,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:var(--card);color:var(--ink);border-radius:16px;max-width:440px;width:100%;padding:22px 20px;border:2px solid var(--line)}
+.modal.danger{border-color:var(--bad)} .modal.caution{border-color:var(--mark)}
+.modal h2{font-size:1.3rem;margin-bottom:8px}
+.modal .acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-weight:600;z-index:60;font-size:.92rem;max-width:calc(100% - 32px);text-align:center}
+/* results (inspired by the reading-practice end page) */
+.hero{background:var(--hero);border-radius:22px;padding:22px 22px 24px;margin-bottom:18px}
+.hero h1{font-size:clamp(1.7rem,7vw,2.3rem);font-weight:800;margin-bottom:8px}
+.hero .meta{display:flex;flex-direction:column;gap:4px;font-size:1.05rem;margin-bottom:16px}
+.hero .meta b{font-weight:700}
+.scorepill{display:inline-flex;align-items:baseline;gap:6px;background:var(--head);color:var(--head-ink);border-radius:999px;padding:12px 30px}
+.scorepill b{font:800 2.4rem var(--display)}
+.scorepill span{font-size:1.1rem;opacity:.9}
+.flag{margin-top:14px;padding:8px 12px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-weight:600}
+.flag.ok{background:var(--good-bg);color:var(--good)}
+.ri{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.ri.c{border-left-color:var(--good)} .ri.w{border-left-color:var(--bad)}
+.ri .qq{display:flex;gap:10px;font-weight:600}
+.ri .qq .n{color:var(--accent);font-family:var(--mono)}
+.ri .ya{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.98rem}
+.ri .ya span:first-child{color:var(--muted)}
+.ri .ya b{white-space:pre-line}
+.badge{display:inline-block;margin-top:8px;border-radius:999px;padding:2px 12px;font-weight:700;font-size:.88rem}
+.badge.c{background:var(--good-bg);color:var(--good)} .badge.w{background:var(--bad-bg);color:var(--bad)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.filters button{font:600 14px var(--body);border:1.5px solid var(--ink);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* projector */
+#proj{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg);padding:1.6vh 2.2vw}
+.pbar{display:flex;align-items:center;gap:2vw;justify-content:space-between}
+.pnum{font:800 clamp(28px,3.4vw,72px) var(--display)}
+.pnum small{font-size:.5em;color:var(--muted);font-weight:600}
+.ptimer{font:700 clamp(36px,5vw,110px) var(--mono);min-width:3.2em;text-align:right}
+.ptimer.low{color:var(--bad)}
+.ptimer.up{color:var(--bad)}
+.ptbar{height:1.2vh;border-radius:99px;background:var(--line);overflow:hidden;margin:1vh 0 1.6vh}
+.ptbar i{display:block;height:100%;background:var(--accent);width:100%;transition:width 1s linear}
+.pmain{flex:1;min-height:0;overflow:hidden;display:flex;gap:2.4vw;align-items:flex-start}
+.pmain .ptexts{flex:1.15;display:flex;flex-direction:column;gap:1.4vh}
+.ptext{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:1.4vh 1.4vw;line-height:1.38}
+.ptext b{display:block;font-family:var(--display);color:var(--accent);margin-bottom:.3em}
+.pq{flex:1;font-weight:600;line-height:1.32}
+.pq .stem{white-space:pre-line}
+.popts{margin-top:1.4em;display:flex;flex-direction:column;gap:.45em;font-weight:400}
+.popts div{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:.3em .6em}
+.ptip{font-size:.62em;color:var(--muted);font-weight:600;margin-top:1.2em}
+.pmain.reading .pq{font-size:1.15em}
+.pmain.two{flex-direction:column;gap:1.6vh}
+.pmain.two .ptexts{flex-direction:row;gap:1.6vw;flex:none;width:100%}
+.pmain.two .ptext{flex:1}
+.pmain.two .pq{flex:none}
+.pctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding-top:1.2vh;border-top:1px solid var(--line);margin-top:1.2vh}
+.pctrl .btn{padding:8px 16px;font-size:15px;min-height:40px}
+.pctrl .sep{flex:1}
+.pgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;max-width:760px;margin:auto}
+.pgrid button{font:700 18px var(--mono);padding:12px 0;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.pgrid button.cur{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+@media print{.sbar,.filters,.noprint{display:none!important}body{background:#fff;color:#000}.ri{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+
+<!-- ============ LANDING / STUDENT START ============ -->
+<div class="wrap" id="startScreen">
+ <div class="card">
+  <div class="eyebrow">Classroom practice · Phone</div>
+  <h1 style="font-size:clamp(1.7rem,6vw,2.2rem);font-weight:800;margin-bottom:6px">Practice Quiz</h1>
+  <p class="muted" style="margin:0">50 questions. The question appears on the projector; you answer on this phone.</p>
+  <label class="f" for="fullName">Full name</label>
+  <input class="t" id="fullName" autocomplete="off" placeholder="e.g., Nathaliza Laura Pramesty">
+  <label class="f" for="studentNo">Student number</label>
+  <input class="t" id="studentNo" autocomplete="off" inputmode="numeric" placeholder="e.g., 2405123">
+  <label class="f" for="program">Study program</label>
+  <input class="t" id="program" autocomplete="off" placeholder="e.g., English Literature">
+  <div class="rules"><b>How it works</b>
+   <ul>
+    <li>When the projector shows <b>Question 7</b>, tap <b>7</b> on your phone and choose your answer before the time runs out.</li>
+    <li>Each question’s timer starts when you open it. When it ends, that question locks.</li>
+    <li>Your options are in a different order from your friends’ options.</li>
+   </ul>
+   <b style="display:block;margin-top:8px">⚠ Anti-cheating rules</b>
+   <ul>
+    <li>Stay on this page: no other tabs or apps, no split screen, no notifications. Keep your screen on.</li>
+    <li>Each time you leave, your options are shuffled again. You get <b>2 warnings</b>; the <b>3rd</b> time, your quiz is submitted automatically.</li>
+   </ul></div>
+  <p class="err" id="startErr" role="alert"></p>
+  <button class="btn primary" id="startBtn" type="button">Start →</button>
+ </div>
+ <p style="text-align:center"><button class="linkbtn" id="lecturerLink" type="button">Lecturer projector display</button></p>
+</div>
+
+<!-- ============ STUDENT: NUMBER GRID ============ -->
+<div class="wrap hidden" id="gridScreen">
+ <div class="sbar">
+  <span class="chip" id="sWho"></span>
+  <span class="chip" id="sCount">0 / 50 answered</span>
+  <span class="chip" id="sWarn">Warnings: 0 / 2</span>
+ </div>
+ <h2 style="font-size:1.25rem;margin-bottom:4px">Tap the number shown on the projector</h2>
+ <div class="legend"><span><i></i>Not opened</span><span><i style="border-color:var(--accent)"></i>Open</span><span><i style="background:var(--good-bg);border-color:var(--good)"></i>Answered</span><span><i style="background:var(--soft)"></i>Time’s up</span></div>
+ <div class="grid" id="grid"></div>
+ <div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn primary" id="submitBtn" type="button">Submit quiz ✓</button></div>
+</div>
+
+<!-- ============ STUDENT: QUESTION ============ -->
+<div class="wrap hidden" id="qScreen">
+ <div class="qhead"><h2 id="qTitle">Question 1</h2><span class="clock" id="qClock">0:30</span></div>
+ <div class="tbar" aria-hidden="true"><i id="qBar"></i></div>
+ <p class="hint">Read the question on the projector, then choose one answer.</p>
+ <div class="opts" id="qOpts" role="group" aria-label="Answer options"></div>
+ <p class="saved" id="qSaved" aria-live="polite"></p>
+ <button class="btn" id="backBtn" type="button" style="margin-top:8px">← Back to numbers</button>
+</div>
+
+<!-- ============ STUDENT: RESULTS ============ -->
+<div class="wrap hidden" id="resultScreen">
+ <div class="hero">
+  <h1 id="rName"></h1>
+  <div class="meta" id="rMeta"></div>
+  <div class="scorepill"><b id="rScore"></b><span id="rTotal"></span></div>
+  <div id="rFlag"></div>
+ </div>
+ <p class="muted" style="margin:0 0 12px">Only shows whether each answer is correct. The answer key is not shown.</p>
+ <div class="filters" role="group" aria-label="Filter results">
+  <button type="button" data-f="all" aria-pressed="true">All</button>
+  <button type="button" data-f="c" aria-pressed="false">Correct</button>
+  <button type="button" data-f="w" aria-pressed="false">Incorrect / unanswered</button>
+ </div>
+ <div id="rList"></div>
+</div>
+
+<!-- ============ LECTURER: PROJECTOR ============ -->
+<div id="proj" class="hidden">
+ <div class="pbar">
+  <div class="pnum" id="pNum">Question 1 <small>/ 50</small></div>
+  <div class="ptimer" id="pTimer">0:30</div>
+ </div>
+ <div class="ptbar" aria-hidden="true"><i id="pBar"></i></div>
+ <div class="pmain" id="pMain"></div>
+ <div class="pctrl noprint">
+  <button class="btn" id="pPrev" type="button">← Prev</button>
+  <button class="btn primary" id="pPlay" type="button">▶ Start</button>
+  <button class="btn" id="pReset" type="button">↺ Reset</button>
+  <button class="btn" id="pAdd" type="button">+10 s</button>
+  <button class="btn" id="pOpts" type="button" aria-pressed="false">Show options</button>
+  <button class="btn" id="pJump" type="button">All numbers</button>
+  <button class="btn" id="pFull" type="button">Full screen</button>
+  <span class="sep"></span>
+  <button class="btn primary" id="pNext" type="button">Next →</button>
+ </div>
+</div>
+<div id="modalRoot"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- data ---------------- */
+var TEXTS={"A":"Fast fashion allows people to buy trendy clothes at very low prices. However, producing these clothes uses huge amounts of water, and many garments are thrown away after only a few uses. As a result, the fashion industry has become a major source of waste.","B":"Second-hand clothing markets are growing among young shoppers in Indonesia. Thrift stores and online resale apps let people buy used clothes cheaply. Many buyers say they choose second-hand items not only to save money but also to reduce textile waste."};
+var DATA=[{"n":1,"q":"“In 2024, our school ignored the warnings about the old water pipes. The pipes burst during the holiday and flooded the hall. ______.”","short":"“In 2024, our school ignored the warnings about the old water pipes. The pipes burst during the holiday and flooded the hall. ______.”","texts":[],"o":["If the school had fixed the pipes, the flood would not have happened.","If the school fixed the pipes, the flood would not have happened.","If it had fixed them, no flood happens.","If the school had fixed the pipes earlier, the flood would not have happen during the holiday."],"time":50},{"n":2,"q":"“Mari lent Sinta her laptop because Sinta’s had broken. She returned it the next day.” The referent of “She” is…","short":"“Mari lent Sinta her laptop because Sinta’s had broken. She returned it the next day.” The referent of “She” is…","texts":[],"o":["Mari","Sinta, the borrower","Mari, who owns the laptop that was lent","Sinta’s broken laptop"],"time":30},{"n":3,"q":"“If the students bring reusable bottles, the canteen will sell fewer plastic ones.” This is…","short":"“If the students bring reusable bottles, the canteen will sell fewer plastic ones.” This is…","texts":[],"o":["Type 0","Type 1","Type 2","Type 3"],"time":30},{"n":4,"q":"Which is the best bullet-point summary of Text A?","short":"Which is the best bullet-point summary of Text A?","texts":["A"],"o":["• Fast fashion makes trendy clothes cheap. • Most of these clothes are recycled after a few uses. • So, the fashion industry produces very little waste overall.","• People love buying trendy clothes. • Water is important for everyone. • Indonesia should ban fast fashion.","• Fast fashion makes trendy clothes cheap. • Making them uses a lot of water, and they are thrown away quickly. • So, fashion creates a lot of waste.","• Fast fashion clothes are cheap. • Fast fashion clothes are trendy. • Fast fashion clothes are sold everywhere."],"time":75},{"n":5,"q":"“Solar Panel Installation for School Buildings by 2026.” Which SDG does this plan mainly support?","short":"“Solar Panel Installation for School Buildings by 2026.” Which SDG does this plan mainly support?","texts":[],"o":["SDG 7: Affordable and Clean Energy","SDG 14: Life Below Water","SDG 2: Zero Hunger","SDG 5: Gender Equality in schools and workplaces"],"time":50},{"n":6,"q":"“The committee rejected the students’ proposal because they found it too expensive.” The referent of “they” is…","short":"“The committee rejected the students’ proposal because they found it too expensive.” The referent of “they” is…","texts":[],"o":["the students","the proposal and its budget","the people who will pay for the whole plan","the committee members"],"time":30},{"n":7,"q":"“Last year, the committee forgot to promote the tree-planting day. Only 10 students came. ______.”","short":"“Last year, the committee forgot to promote the tree-planting day. Only 10 students came. ______.”","texts":[],"o":["If they promoted the event, more students would have come.","If they had promoted the event, more students would have come.","If they had promoted it, more will come.","If they had promoted the event, more students would have came to plant trees."],"time":50},{"n":8,"q":"“Plastic straws and paper cups are common in our canteen. The former are rarely recycled, while the latter often end up in the general bin.” The referent of “the latter” is…","short":"“Plastic straws and paper cups are common in our canteen. The former are rarely recycled, while the latter often end up in the general bin.” The referent of “the latter” is…","texts":[],"o":["paper cups","plastic straws","the general bin in the canteen","the bins"],"time":30},{"n":9,"q":"Combine with “if”: “We plant more trees. The air becomes cleaner.”","short":"Combine with “if”: “We plant more trees. The air becomes cleaner.”","texts":[],"o":["If we will plant more trees, the air becomes cleaner.","If we planted trees, the air will be cleaner.","If we plant more trees, the air would have become cleaner.","If we plant more trees, the air will become cleaner."],"time":40},{"n":10,"q":"Which is the best problem identification?","short":"Which is the best problem identification?","texts":[],"o":["Our school has many serious environmental problems that need to be solved soon.","Only 30% of students join the school’s recycling program.","People don’t care about nature.","There is pollution in our community."],"time":50},{"n":11,"q":"“Our campus produces 200 kg of food waste every week. ______. That is why the student council is building a compost area.”","short":"“Our campus produces 200 kg of food waste every week. ______. That is why the student council is building a compost area.”","texts":[],"o":["If we compost the waste, we will make free fertilizer.","If we compost the waste, we will made free fertilizer.","If we will compost it, we make fertilizer.","If we had composted the waste, we will make free fertilizer."],"time":50},{"n":12,"q":"“Our class planted 50 trees last year. ______. That is why we count the living trees every month.”","short":"“Our class planted 50 trees last year. ______. That is why we count the living trees every month.”","texts":[],"o":["We want to know how many of them have they survived.","We want to know that how many survived.","We want to know how many of them did survive since last year?","We want to know how many of them have survived."],"time":50},{"n":13,"q":"“Dina told her brother that she had passed the exam, so their parents bought Dina a cake.” The referent of “she” is…","short":"“Dina told her brother that she had passed the exam, so their parents bought Dina a cake.” The referent of “she” is…","texts":[],"o":["Dina, who took the exam","Dina’s brother","Dina’s mother, who bought the cake","the parents"],"time":30},{"n":14,"q":"Combine: “The seminar started at 9. The students arrived at 9:20.”","short":"Combine: “The seminar started at 9. The students arrived at 9:20.”","texts":[],"o":["The seminar started after the students had already arrived.","The seminar started because they arrived.","The seminar started before the students arrived.","The seminar started although the students arrived."],"time":40},{"n":15,"q":"“Many students skip breakfast. This makes it hard for them to focus in morning classes.” The referent of “This” is…","short":"“Many students skip breakfast. This makes it hard for them to focus in morning classes.” The referent of “This” is…","texts":[],"o":["many students","the morning classes that start very early","skipping breakfast","the ability to focus"],"time":30},{"n":16,"q":"“Our town has no recycling center. People throw all their waste into one bin. ______. Sadly, the nearest center is 50 km away.”","short":"“Our town has no recycling center. People throw all their waste into one bin. ______. Sadly, the nearest center is 50 km away.”","texts":[],"o":["If the town has a recycling center, people would sort their waste.","If the town had a center, people sorted.","If the town had a recycling center, people will sort their waste into different bins.","If the town had a recycling center, people would sort their waste."],"time":50},{"n":17,"q":"“Our canteen stopped selling bottled water last month. ______. Now, each floor has a refill station.”","short":"“Our canteen stopped selling bottled water last month. ______. Now, each floor has a refill station.”","texts":[],"o":["Although students could no longer buy water, they started bringing their own bottles.","Unless students could buy water, they brought bottles.","Since students could no longer buy water, they started bringing their own bottles.","Because of students could no longer buy water, they started bringing their own bottles."],"time":50},{"n":18,"q":"Combine with “if”: “The factory didn’t treat its waste. The river was polluted.” (past)","short":"Combine with “if”: “The factory didn’t treat its waste. The river was polluted.” (past)","texts":[],"o":["If the factory had treated its waste, the river would not have been polluted.","If the factory treated its waste, the river would not have been polluted.","If it had treated it, the river is clean.","If the factory has treated its waste, the river would not have been polluted at all."],"time":40},{"n":19,"q":"“The river near our campus is heavily polluted. ______, local fishermen have lost much of their income.”","short":"“The river near our campus is heavily polluted. ______, local fishermen have lost much of their income.”","texts":[],"o":["In contrast","First of all","Similarly","As a result"],"time":30},{"n":20,"q":"Combine with “if”: “I don’t have a bike. I can’t cycle to campus.” (unlikely situation)","short":"Combine with “if”: “I don’t have a bike. I can’t cycle to campus.” (unlikely situation)","texts":[],"o":["If I have a bike, I would cycle to campus.","If I had a bike, I will cycling to campus.","If I had a bike, I would cycle to campus.","If I would have a bike, I cycled."],"time":40},{"n":21,"q":"Combine: “I don’t know it. Where did she put the keys?”","short":"Combine: “I don’t know it. Where did she put the keys?”","texts":[],"o":["I don’t know where did she put the keys.","I don’t know where she put the keys.","I don’t know that where she put the keys.","I don’t know where she put."],"time":40},{"n":22,"q":"“If the team had checked the data, they would have noticed the error.” This is…","short":"“If the team had checked the data, they would have noticed the error.” This is…","texts":[],"o":["Type 0","Type 1","Type 2","Type 3"],"time":30},{"n":23,"q":"Combine: “She didn’t like the design. She bought the poster.”","short":"Combine: “She didn’t like the design. She bought the poster.”","texts":[],"o":["She bought the poster because she didn’t like the design.","She bought it unless she liked it.","She bought the poster although she didn’t liked the design.","She bought the poster although she didn’t like the design."],"time":40},{"n":24,"q":"Which is the best paraphrase of the first sentence of Text A?","short":"Which is the best paraphrase of the first sentence of Text A?","texts":["A"],"o":["Fast fashion lets people buy trendy clothes at very low prices.","Fast fashion makes fashionable clothing very cheap to buy.","Fast fashion makes clothes trendy but expensive.","Fast fashion allows people to buy trendy clothes at very low prices every week."],"time":75},{"n":25,"q":"“The UN adopted the 17 SDGs in 2015. ______. Therefore, many schools now teach students about sustainability.”","short":"“The UN adopted the 17 SDGs in 2015. ______. Therefore, many schools now teach students about sustainability.”","texts":[],"o":["Experts believe what education is the key to achieving the goals.","Experts believe whether education is the key.","Experts believe that education is key to achieving the goals.","Experts believe education that is the key to achieving the goals."],"time":50},{"n":26,"q":"“If I won the lottery, I would build a solar farm.” This is…","short":"“If I won the lottery, I would build a solar farm.” This is…","texts":[],"o":["Type 0","Type 1","Type 2","Type 3"],"time":30},{"n":27,"q":"Which is a reasonable inference from Text B?","short":"Which is a reasonable inference from Text B?","texts":["B"],"o":["Thrift stores will replace every new clothing store in Indonesia by 2030.","Some young shoppers care about the environment.","Resale apps cost more than thrift stores.","Young Indonesians never buy new clothes."],"time":75},{"n":28,"q":"Combine with “if”: “The city doesn’t have bike lanes. People don’t cycle to work.” (unlikely situation)","short":"Combine with “if”: “The city doesn’t have bike lanes. People don’t cycle to work.” (unlikely situation)","texts":[],"o":["If the city has bike lanes, people would cycled to work.","If the city had lanes, people will cycle.","If the city had bike lanes, people would cycle to work.","If the city would have bike lanes, people cycled to work every day."],"time":40},{"n":29,"q":"Which is the best way to review the impact of an energy-saving plan?","short":"Which is the best way to review the impact of an energy-saving plan?","texts":[],"o":["Ask the principal whether the plan seemed successful after it was finished.","Count the posters about saving energy.","Compare the electricity bills from before and after 4 months.","Write down how many meetings the team held during the whole project."],"time":50},{"n":30,"q":"Combine with “if”: “She didn’t study. She failed the exam.” (past)","short":"Combine with “if”: “She didn’t study. She failed the exam.” (past)","texts":[],"o":["If she studied, she would not have failed the exam.","If she had studied, she will not fail.","If she had studied, she would not had failed the exam last semester.","If she had studied, she would not have failed the exam."],"time":40},{"n":31,"q":"Which objective best follows the SMART framework?","short":"Which objective best follows the SMART framework?","texts":[],"o":["Cut canteen plastic use by 50% within 3 months by installing refill stations.","Reduce plastic use at school as much as possible so that our environment becomes cleaner.","Make students aware of plastic.","Stop using plastic forever in every part of our school and in all of our students’ homes."],"time":50},{"n":32,"q":"“Some students throw food leftovers into the plastic bin. Such habits make recycling harder.” The referent of “Such habits” is…","short":"“Some students throw food leftovers into the plastic bin. Such habits make recycling harder.” The referent of “Such habits” is…","texts":[],"o":["throwing leftovers into the plastic bin","recycling plastic bottles every day","eating all the food in the canteen without any leftovers","recycling"],"time":30},{"n":33,"q":"Combine: “We discussed it. Should we postpone the trip or not?”","short":"Combine: “We discussed it. Should we postpone the trip or not?”","texts":[],"o":["We discussed whether should we postpone the trip.","We discussed that whether we should postpone the trip.","We discussed it should we postpone.","We discussed whether we should postpone the trip."],"time":40},{"n":34,"q":"Which is the best paraphrase of the last sentence of Text B?","short":"Which is the best paraphrase of the last sentence of Text B?","texts":["B"],"o":["Many buyers say they pick second-hand items not only to save cash but also to lower textile waste.","Many shoppers report buying used clothes both to save money and to cut textile waste.","Shoppers say used clothes are better than new ones.","Shoppers buy used clothes only to save money."],"time":75},{"n":35,"q":"Which is the best title for a sustainable development plan?","short":"Which is the best title for a sustainable development plan?","texts":[],"o":["Environmental Awareness Program for a Better and Greener Future for Everyone","Clean Energy Movement","Weekly Canteen Compost Program to Cut Food Waste","Save the Earth Project"],"time":50},{"n":36,"q":"“The campaign reduced plastic use by 40%. ______, it saved the canteen money on cups.”","short":"“The campaign reduced plastic use by 40%. ______, it saved the canteen money on cups.”","texts":[],"o":["In contrast","For instance","Nevertheless","In addition"],"time":30},{"n":37,"q":"“Before the plan, the canteen used 500 plastic cups a week; after 3 months, it used 220. A student survey also shows more students bring bottles.” This belongs to…","short":"“Before the plan, the canteen used 500 plastic cups a week; after 3 months, it used 220. A student survey also shows more students bring bottles.” This belongs to…","texts":[],"o":["Problem identification, because it describes the issue","Impact/performance review","Procedures","Resources, because it mentions cups and bottles"],"time":50},{"n":38,"q":"“Many students cannot afford a laptop. They write their assignments on their phones. ______. However, laptops are still too expensive for them.”","short":"“Many students cannot afford a laptop. They write their assignments on their phones. ______. However, laptops are still too expensive for them.”","texts":[],"o":["If they have laptops, they would type their work faster.","If they had laptops, they will type faster.","If they had laptops, they would type their work faster.","If they would had laptops, they typed their assignments much faster."],"time":50},{"n":39,"q":"Which belongs in the Implementation & Monitoring section rather than the Procedures section?","short":"Which belongs in the Implementation & Monitoring section rather than the Procedures section?","texts":[],"o":["Turn off lights and AC when the room is empty for more than five minutes.","Collect 20 kg of paper waste.","Plant 50 native trees in the school garden and water them twice a week.","Week 1: assign student monitors; Weeks 2–16: post weekly updates."],"time":50},{"n":40,"q":"Which statement best synthesizes Text A and Text B?","short":"Which statement best synthesizes Text A and Text B?","texts":["A","B"],"o":["Fast fashion creates much waste, but some shoppers choose second-hand clothes to reduce it.","Fast fashion uses huge amounts of water, and many garments are thrown away after only a few uses.","Second-hand markets are growing in Indonesia.","Both texts show that young Indonesians prefer fast fashion because new clothes are cheaper than used ones."],"time":100},{"n":41,"q":"“Reduce plastic waste in the canteen by 40%.” Which SMART element is missing?","short":"“Reduce plastic waste in the canteen by 40%.” Which SMART element is missing?","texts":[],"o":["Specific","Time-bound","Measurable","Relevant"],"time":50},{"n":42,"q":"“Many small actions can save energy. ______, students can turn off the lights when they leave the classroom.”","short":"“Many small actions can save energy. ______, students can turn off the lights when they leave the classroom.”","texts":[],"o":["For example","However","As a result","In conclusion"],"time":30},{"n":43,"q":"To run a monthly beach clean-up, which is the best list of resources?","short":"To run a monthly beach clean-up, which is the best list of resources?","texts":[],"o":["Cleaning materials and other things that might be needed for the beach clean-up activity","Some volunteers and some money","25 reusable trash bags, gloves, a weighing scale, and a recycling partner","Energy-use sheet, school electricity bill, and an energy-monitoring team"],"time":50},{"n":44,"q":"“The school garden needs water every day. ______. Therefore, we made a watering schedule.”","short":"“The school garden needs water every day. ______. Therefore, we made a watering schedule.”","texts":[],"o":["The plants will die if someone waters them regularly.","The plants will die unless someone waters them regularly.","The plants will die although someone waters them regularly.","The plants will die unless someone doesn’t water them regularly."],"time":50},{"n":45,"q":"“The bike-to-campus week starts next Monday. ______. So, please register before Friday.”","short":"“The bike-to-campus week starts next Monday. ______. So, please register before Friday.”","texts":[],"o":["If you join the event, you will get a free reusable bottle.","If you will join the event, you get a free reusable bottle.","If you joined, you will get a bottle.","If you join the event, you would have gotten a free reusable bottle."],"time":50},{"n":46,"q":"“That the river is polluted worries the villagers.” The clause “That the river is polluted” is a(n)…","short":"“That the river is polluted worries the villagers.” The clause “That the river is polluted” is a(n)…","texts":[],"o":["relative clause","adverb clause","adjective clause","noun clause"],"time":30},{"n":47,"q":"Combine with “if”: “It rains tomorrow. The beach clean-up will be cancelled.”","short":"Combine with “if”: “It rains tomorrow. The beach clean-up will be cancelled.”","texts":[],"o":["If it rains tomorrow, the beach clean-up will be cancelled.","If it will rain tomorrow, the beach clean-up will be cancelled.","If it rained, the clean-up will be cancelled.","If it rains tomorrow, the beach clean-up would have been cancelled."],"time":40},{"n":48,"q":"For a plan to cut classroom energy use, which is the most actionable procedure?","short":"For a plan to cut classroom energy use, which is the most actionable procedure?","texts":[],"o":["Save energy in the classroom whenever possible so that the electricity bill goes down.","Be more aware of energy use.","Turn off the lights and AC when the room is empty for more than 5 minutes.","Love the earth."],"time":50},{"n":49,"q":"“Solar panels are expensive to install. ______, they lower electricity bills in the long run.”","short":"“Solar panels are expensive to install. ______, they lower electricity bills in the long run.”","texts":[],"o":["Therefore","For example","Thus","However"],"time":30},{"n":50,"q":"“We stayed inside because the air quality was poor.” The clause “because the air quality was poor” is a(n)…","short":"“We stayed inside because the air quality was poor.” The clause “because the air quality was poor” is a(n)…","texts":[],"o":["noun clause","adverb clause","relative clause","adjective clause"],"time":30}];              // canonical option order; per-student order is shuffled at runtime
+var K="SFQhMzwOFeX1/MrcpLG8iJpnd0NPXiM2Ag0Z6/bGzt2ttICUn2lzRVNfKDoEFh7v/cQ=";                // scrambled answer key (index into canonical options)
+var LECTURER_PIN="EL2026";     // passcode for the projector display
+var MAX_WARN=2, GRACE=5;        // phone gets a few extra seconds over the projector
+function key(i){var b=atob(K);return "abcd".indexOf(String.fromCharCode(b.charCodeAt(i)^(41+i*13)%256));}
+function secs(q){return q.time;}
+
+var $=function(id){return document.getElementById(id);};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+function fmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");}
+function show(id){["startScreen","gridScreen","qScreen","resultScreen","proj"].forEach(function(x){$(x).classList.toggle("hidden",x!==id);});window.scrollTo(0,0);}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+/* bullet-point options (the summary item) are shown one bullet per line */
+function optHtml(t){return t.indexOf("•")>-1?t.split("•").filter(function(x){return x.trim();}).map(function(x){return '<span class="bl">• '+esc(x.trim())+'</span>';}).join(""):esc(t);}
+function optText(t){return t.indexOf("•")>-1?t.split("•").filter(function(x){return x.trim();}).map(function(x){return "• "+x.trim();}).join("\n"):t;}
+
+/* ---------------- modal & toast (no alert(): it steals focus) ---------------- */
+var modalOpen=false;
+function modal(o){modalOpen=true;var r=$("modalRoot");
+ r.innerHTML='<div class="overlay" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="modal '+(o.tone||'')+'"><h2 id="mt">'+o.title+'</h2><div>'+o.body+'</div><div class="acts">'+
+ (o.cancel?'<button class="btn" id="mCancel" type="button">'+o.cancel+'</button>':'')+'<button class="btn primary" id="mOk" type="button">'+(o.ok||'OK')+'</button></div></div></div>';
+ var close=function(){r.innerHTML="";modalOpen=false;};
+ $("mOk").onclick=function(){var v=o.input?($("mIn")||{}).value:null;close();if(o.onOk)o.onOk(v);};
+ if(o.cancel)$("mCancel").onclick=function(){close();if(o.onCancel)o.onCancel();};
+ ($("mIn")||$("mOk")).focus();}
+var toastT;function toast(t){var el=document.querySelector(".toast");if(!el){el=document.createElement("div");el.className="toast";el.setAttribute("role","status");document.body.appendChild(el);}
+ el.textContent=t;el.classList.remove("hidden");clearTimeout(toastT);toastT=setTimeout(function(){el.classList.add("hidden");},2400);}
+
+/* =====================================================================
+   LECTURER PROJECTOR
+   ===================================================================== */
+var P={i:0,left:0,running:false,tick:null,showOpts:false};
+$("lecturerLink").onclick=function(){
+ modal({title:"Lecturer display",body:'<label class="f" for="mIn" style="margin-top:0">Passcode</label><input class="t" id="mIn" type="password" autocomplete="off">',input:true,ok:"Open",cancel:"Cancel",
+  onOk:function(v){if(String(v||"").trim()===LECTURER_PIN)startProjector();else toast("Wrong passcode.");}});
+ setTimeout(function(){var i=$("mIn");if(i)i.onkeydown=function(e){if(e.key==="Enter")$("mOk").click();};},0);};
+function startProjector(){S.mode="lecturer";show("proj");pGo(0);}
+function pGo(i){if(i<0||i>=DATA.length)return;P.i=i;P.running=false;clearInterval(P.tick);P.left=secs(DATA[i]);P.showOpts=false;pRender();}
+function pRender(){var q=DATA[P.i];
+ $("pNum").innerHTML="Question "+q.n+" <small>/ "+DATA.length+"</small>";
+ var h="";
+ if(q.texts.length){h+='<div class="ptexts">'+q.texts.map(function(t){return '<div class="ptext"><b>Text '+t+'</b>'+esc(TEXTS[t])+'</div>';}).join("")+'</div>';}
+ h+='<div class="pq"><div class="stem">'+esc(q.q)+'</div>';
+ if(P.showOpts)h+='<div class="popts">'+q.o.map(function(o){return '<div>'+optHtml(o)+'</div>';}).join("")+'</div>';
+ else h+='<div class="ptip">Answer on your phone: tap '+q.n+'.</div>';
+ h+='</div>';
+ $("pMain").innerHTML=h;$("pMain").className="pmain"+(q.texts.length?" reading":"")+(q.texts.length>1?" two":"");$("pOpts").setAttribute("aria-pressed",P.showOpts);$("pOpts").textContent=P.showOpts?"Hide options":"Show options";
+ $("pPrev").disabled=P.i===0;$("pNext").disabled=P.i===DATA.length-1;
+ pClock();fit();}
+function pClock(){var tot=secs(DATA[P.i]);$("pTimer").textContent=P.left>0?fmt(P.left):"Time’s up";
+ $("pTimer").classList.toggle("low",P.left<=5&&P.left>0);$("pTimer").classList.toggle("up",P.left<=0);
+ $("pBar").style.width=Math.max(0,P.left/tot*100)+"%";$("pPlay").textContent=P.running?"❚❚ Pause":"▶ Start";}
+function pToggle(){if(P.left<=0)return;P.running=!P.running;clearInterval(P.tick);
+ if(P.running)P.tick=setInterval(function(){P.left--;if(P.left<=0){P.left=0;P.running=false;clearInterval(P.tick);}pClock();},1000);pClock();}
+/* shrink the text until the question (and reading texts) fit the screen */
+function fit(){var m=$("pMain"),s=Math.min(window.innerWidth/1280,window.innerHeight/720),f=Math.round(56*s);
+ for(var k=0;k<80;k++){m.style.fontSize=f+"px";if(m.scrollHeight<=m.clientHeight+2||f<=14)break;f-=1;}}
+$("pPrev").onclick=function(){pGo(P.i-1);};$("pNext").onclick=function(){pGo(P.i+1);};
+$("pPlay").onclick=pToggle;$("pReset").onclick=function(){pGo(P.i);};
+$("pAdd").onclick=function(){P.left+=10;pClock();};
+$("pOpts").onclick=function(){P.showOpts=!P.showOpts;pRender();};
+$("pFull").onclick=function(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}};
+$("pJump").onclick=function(){var h='<div class="pgrid">'+DATA.map(function(q,i){return '<button type="button" data-j="'+i+'"'+(i===P.i?' class="cur"':'')+'>'+q.n+'</button>';}).join("")+'</div>';
+ modal({title:"Go to question",body:h,ok:"Close"});document.querySelector(".modal").style.maxWidth="820px";
+ document.querySelectorAll("[data-j]").forEach(function(b){b.onclick=function(){$("modalRoot").innerHTML="";modalOpen=false;pGo(+b.dataset.j);};});};
+window.addEventListener("resize",function(){if(S.mode==="lecturer")fit();});
+document.addEventListener("keydown",function(e){if(S.mode!=="lecturer"||modalOpen)return;
+ if(e.key==="ArrowRight"||e.key==="PageDown"){e.preventDefault();pGo(P.i+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();pGo(P.i-1);}
+ else if(e.key===" "){e.preventDefault();pToggle();}else if(e.key.toLowerCase()==="o"){P.showOpts=!P.showOpts;pRender();}else if(e.key.toLowerCase()==="f")$("pFull").click();});
+
+/* =====================================================================
+   STUDENT
+   ===================================================================== */
+var S={mode:"",name:"",no:"",prog:"",ans:{},open:{},locked:{},order:{},cur:-1,viol:0,lastV:0,auto:"",start:0,active:false,done:false,qtick:null,baseW:0,baseH:0,orient:"",wake:null};
+function newOrders(){DATA.forEach(function(q,i){S.order[i]=shuffle([0,1,2,3]);});}
+$("startBtn").onclick=function(){
+ var n=$("fullName").value.trim(),no=$("studentNo").value.trim(),p=$("program").value.trim();
+ if(!n||!no||!p){$("startErr").textContent="Please fill in your name, student number and study program.";return;}
+ S.mode="student";S.name=n;S.no=no;S.prog=p;newOrders();S.start=Date.now();S.active=true;
+ try{if(document.documentElement.requestFullscreen&&window.matchMedia("(pointer:fine)").matches)document.documentElement.requestFullscreen().catch(function(){});}catch(e){}
+ wake();$("sWho").textContent=n;drawGrid();show("gridScreen");
+ setTimeout(function(){S.baseW=window.innerWidth;S.baseH=window.innerHeight;S.orient=orient();},1200);
+ S.qtick=setInterval(qTick,500);};
+/* keep the phone screen on, so an auto screen-lock doesn't count as leaving */
+function wake(){try{if(navigator.wakeLock&&S.active)navigator.wakeLock.request("screen").then(function(w){S.wake=w;}).catch(function(){});}catch(e){}}
+
+function status(i){if(S.locked[i])return "locked";if(S.ans[i]!==undefined)return "done";if(S.open[i])return "open";return "";}
+function drawGrid(){$("grid").innerHTML=DATA.map(function(q,i){var st=status(i);return '<button type="button" class="num '+st+'" data-i="'+i+'"'+(st==="locked"?' aria-disabled="true"':'')+' aria-label="Question '+q.n+(st==="done"?", answered":st==="locked"?", time is up":"")+'">'+q.n+'</button>';}).join("");
+ $("grid").querySelectorAll(".num").forEach(function(b){b.onclick=function(){openQ(+b.dataset.i);};});
+ var n=Object.keys(S.ans).length;$("sCount").textContent=n+" / "+DATA.length+" answered";}
+function remain(i){return S.open[i]?secs(DATA[i])+GRACE-(Date.now()-S.open[i])/1000:secs(DATA[i])+GRACE;}
+function openQ(i){if(S.done)return;if(S.locked[i]){toast("Time’s up for question "+DATA[i].n+".");return;}
+ if(!S.open[i])S.open[i]=Date.now();S.cur=i;$("qTitle").textContent="Question "+DATA[i].n;renderOpts();qTick();show("qScreen");}
+function renderOpts(){var i=S.cur;if(i<0)return;var q=DATA[i];
+ $("qOpts").innerHTML=S.order[i].map(function(k,pos){return '<button type="button" class="opt" data-k="'+k+'" aria-pressed="'+(S.ans[i]===k)+'"><span class="l">'+"ABCD"[pos]+'</span><span>'+optHtml(q.o[k])+'</span></button>';}).join("");
+ $("qOpts").querySelectorAll(".opt").forEach(function(b){b.onclick=function(){if(S.locked[i]||S.done)return;S.ans[i]=+b.dataset.k;
+  $("qOpts").querySelectorAll(".opt").forEach(function(x){x.setAttribute("aria-pressed",x===b);});$("qSaved").textContent="✓ Answer saved. You can change it until the time runs out.";drawGrid();};});
+ $("qSaved").textContent=S.ans[i]!==undefined?"✓ Answer saved. You can change it until the time runs out.":"";}
+function qTick(){if(!S.active)return;
+ Object.keys(S.open).forEach(function(k){k=+k;if(!S.locked[k]&&remain(k)<=0){S.locked[k]=true;
+  if(S.cur===k&&!$("qScreen").classList.contains("hidden")){S.cur=-1;drawGrid();show("gridScreen");toast("Time’s up for question "+DATA[k].n+".");}else drawGrid();}});
+ if(S.cur>-1){var r=remain(S.cur),tot=secs(DATA[S.cur])+GRACE;$("qClock").textContent=fmt(r);$("qClock").classList.toggle("low",r<=8);$("qBar").style.width=Math.max(0,r/tot*100)+"%";}}
+$("backBtn").onclick=function(){S.cur=-1;drawGrid();show("gridScreen");};
+
+/* ---------------- anti-cheat ---------------- */
+function orient(){try{return screen.orientation?screen.orientation.type:String(window.orientation);}catch(e){return "";}}
+function violation(reason){
+ if(!S.active||S.done)return;var now=Date.now();if(now-S.lastV<2500)return;S.lastV=now; // blur + visibilitychange fire together: count once
+ S.viol++;newOrders();renderOpts();   // re-shuffle every question's options, so a screenshot or a peek no longer matches
+ $("sWarn").textContent="Warnings: "+Math.min(S.viol,MAX_WARN)+" / "+MAX_WARN;$("sWarn").classList.add("warn");
+ if(S.viol<=MAX_WARN){var last=S.viol===MAX_WARN;
+  modal({tone:last?"danger":"caution",title:last?"⛔ Final warning (2 of 2)":"⚠ Warning (1 of 2)",
+   body:"<p>You "+reason+". Your options have been shuffled again.</p><p>Stay on this page until you submit: no other tabs or apps, no split screen, no notifications."+(last?" <b>Next time, your quiz will be submitted automatically.</b>":" You have one warning left.")+"</p>",ok:"Back to the quiz",onOk:wake});
+ }else{S.auto="Left the page "+S.viol+" times";finish();
+  modal({tone:"danger",title:"❌ Quiz submitted automatically",body:"<p>You left the quiz page a third time, so your answers were submitted.</p>",ok:"See my score"});}}
+document.addEventListener("visibilitychange",function(){if(document.hidden)violation("left the quiz tab or app");else wake();});
+window.addEventListener("blur",function(){setTimeout(function(){if(!document.hasFocus())violation("switched to another window, app or notification");},300);});
+window.addEventListener("resize",function(){if(S.mode!=="student"||!S.active||!S.baseW)return;
+ if(orient()!==S.orient){S.orient=orient();setTimeout(function(){S.baseW=window.innerWidth;S.baseH=window.innerHeight;},600);return;}
+ if(window.innerWidth<S.baseW*0.75||window.innerHeight<S.baseH*0.6)violation("made the window smaller or used split screen");});
+document.addEventListener("fullscreenchange",function(){if(S.mode!=="student")return;if(document.fullscreenElement)S.fs=true;else if(S.fs&&S.active)violation("left full screen");});
+document.addEventListener("contextmenu",function(e){if(S.active){e.preventDefault();toast("Right-click is disabled during the quiz.");}});
+["copy","cut","paste"].forEach(function(t){document.addEventListener(t,function(e){if(S.active){e.preventDefault();toast("Copying is disabled during the quiz.");}});});
+document.addEventListener("keydown",function(e){if(!S.active)return;var k=(e.key||"").toLowerCase();
+ if(k==="printscreen"||k==="f12"||((e.ctrlKey||e.metaKey)&&["c","x","v","p","s","u","a","f"].indexOf(k)>-1)||((e.ctrlKey||e.metaKey)&&e.shiftKey&&["i","j","c","s"].indexOf(k)>-1)){e.preventDefault();toast("That shortcut is disabled during the quiz.");}});
+window.addEventListener("beforeunload",function(e){if(S.active){e.preventDefault();e.returnValue="";}});
+
+/* ---------------- submit & results ---------------- */
+$("submitBtn").onclick=function(){var n=Object.keys(S.ans).length;
+ modal({tone:n<DATA.length?"caution":"",title:"Submit your quiz?",body:"<p>You answered "+n+" of "+DATA.length+" questions."+(n<DATA.length?" Unanswered questions count as incorrect.":"")+" You can’t change your answers after submitting.</p>",ok:"Submit",cancel:"Keep going",onOk:finish});};
+function finish(){if(S.done)return;S.done=true;S.active=false;clearInterval(S.qtick);
+ try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}try{if(S.wake)S.wake.release();}catch(e){}
+ var used=Math.round((Date.now()-S.start)/1000),ok=0,h="";
+ DATA.forEach(function(q,i){var a=S.ans[i],has=a!==undefined,right=has&&a===key(i);if(right)ok++;   // compared by option, not by position: shuffling never changes the key
+  h+='<div class="ri '+(right?'c':'w')+'" data-r="'+(right?'c':'w')+'"><div class="qq"><span class="n">'+q.n+'.</span><span>'+esc(q.short)+'</span></div>'+
+   '<div class="ya"><span>Your answer:</span><b>'+(has?esc(optText(q.o[a])):(S.locked[i]?"Not answered (time ran out)":"Not answered"))+'</b></div>'+
+   '<span class="badge '+(right?'c':'w')+'">'+(right?'✓ correct':'✗ incorrect')+'</span></div>';});
+ $("rList").innerHTML=h;$("rName").textContent=S.name;
+ var m=Math.floor(used/60),s=used%60;
+ $("rMeta").innerHTML='<span>🎓 Student number: <b>'+esc(S.no)+'</b></span><span>📚 <b>'+esc(S.prog)+'</b></span><span>⏱️ Test time: <b>'+m+' min '+s+' sec</b></span><span class="muted" style="font-size:.9rem">Submitted '+esc(new Date().toLocaleString())+'</span>';
+ $("rScore").textContent=ok;$("rTotal").textContent="/"+DATA.length;
+ $("rFlag").innerHTML=S.auto?'<div class="flag">Auto-submitted: '+esc(S.auto)+'. Warnings received: '+MAX_WARN+' / '+MAX_WARN+'.</div>':'<div class="flag '+(S.viol?'':'ok')+'">Submitted by student. Warnings received: '+S.viol+' / '+MAX_WARN+'.</div>';
+ show("resultScreen");}
+document.querySelectorAll(".filters button").forEach(function(b){b.onclick=function(){document.querySelectorAll(".filters button").forEach(function(x){x.setAttribute("aria-pressed",x===b);});
+ document.querySelectorAll(".ri").forEach(function(r){r.classList.toggle("hidden",b.dataset.f!=="all"&&r.dataset.r!==b.dataset.f);});};});
+})();
+</script>
+
+</body>
+</html>
